@@ -17,17 +17,8 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        Asignacion::factory(10)->create();
+        Asignacion::factory(1000)->create();
 
-            $admin = User::updateOrCreate(
-            ['email' => 'admin@example.com'],
-            [
-                'name' => 'Administrador',
-                'password' => Hash::make('Password123'),
-            ],
-        );
-        
-            $admin->forceFill(['email_verified_at' => now()])->save();
     
 }
     }

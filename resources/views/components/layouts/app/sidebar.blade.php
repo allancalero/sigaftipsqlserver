@@ -13,21 +13,73 @@
 
             <flux:navlist variant="outline">
                 <flux:navlist.group :heading="__('Platform')" class="grid">
-                    <flux:navlist.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>{{ __('dashboard.Dashboard') }}</flux:navlist.item>
+                    <flux:navlist.item
+                        icon="home"
+                        :href="route('dashboard')"
+                        :current="request()->routeIs('dashboard')"
+                        wire:navigate
+                    >{{ __('Inicio') }}</flux:navlist.item>
                 </flux:navlist.group>
+
+                     <flux:navlist.group heading="Catálogos" collapsible>
+                    <flux:navlist.item icon="building-office"
+                                       href="#"
+                                       :current="false"
+                                       wire:navigate>{{ __('Unidades Ejecutoras') }}
+                    </flux:navlist.item>
+
+                    <flux:navlist.item icon="credit-card"
+                                       href="#"
+                                       :current="false"
+                                       wire:navigate>{{ __('Fuente de Financiamiento') }}
+                    </flux:navlist.item>
+
+                     <flux:navlist.item icon="credit-card"
+                                       href="{{ route('asignacions') }}"
+                                       :current="false"
+                                       wire:navigate>{{ __('Asignacion') }}
+                    </flux:navlist.item>
+
+
+                    <flux:navlist.item icon="credit-card"
+                                       href="#"
+                                       :current="false"
+                                       wire:navigate>{{ __('Proveedor') }}
+                    </flux:navlist.item>
+
+                </flux:navlist.group>
+
+
+
+                <flux:navlist.group heading="Gestión de activos Fijo" collapsible class="mt-2">
+
+                    <flux:navlist.item icon="tag"
+                                       href="#"
+                                       :current="false"
+                                       wire:navigate>{{ __('Clasificación de activo') }}
+                    </flux:navlist.item>
+                    <flux:navlist.item icon="computer-desktop"
+                                       href="#"
+                                       :current="false"
+                                       wire:navigate>{{ __('Registro Activo') }}
+                    </flux:navlist.item>
+                    <flux:navlist.item icon="arrow-path-rounded-square"
+                                       href="#"
+                                       :current="false"
+                                       wire:navigate>{{ __('Reasignación de Activo') }}
+                    </flux:navlist.item>
+                     <flux:navlist.item icon="arrow-down-on-square-stack"
+                                       href="#"
+                                       :current="false"
+                                       wire:navigate>{{ __('Baja Activo') }}
+                    </flux:navlist.item>
+
+
+                </flux:navlist.group>
+
             </flux:navlist>
 
             <flux:spacer />
-
-            <flux:navlist variant="outline">
-                <flux:navlist.item icon="folder-git-2" href="https://github.com/laravel/livewire-starter-kit" target="_blank">
-                {{ __('Repository') }}
-                </flux:navlist.item>
-
-                <flux:navlist.item icon="book-open-text" href="https://laravel.com/docs/starter-kits#livewire" target="_blank">
-                {{ __('Documentation') }}
-                </flux:navlist.item>
-            </flux:navlist>
 
             <!-- Desktop User Menu -->
             <flux:dropdown class="hidden lg:block" position="bottom" align="start">
