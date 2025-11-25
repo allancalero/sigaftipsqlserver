@@ -1,0 +1,167 @@
+@startuml
+' Configuración del diagrama
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+skinparam linetype ortho
+
+' Enums
+enum EstadoGeneral {
+    ACTIVO
+    INACTIVO
+}
+
+enum EstadoActivo {
+    NUEVO
+    BUENO
+    REGULAR
+    MALO
+}
+
+enum RolUsuario {
+    ADMIN
+    CONTADOR
+    JEFE_UNIDAD
+    AUDITOR
+}
+
+' Clases principales
+class Unidad {
+    + id : bigint
+    + nombre : varchar(255)
+    + estado : EstadoGeneral
+    + created_at : datetime
+    + updated_at : datetime
+}
+
+class Clasificacion {
+    + id : bigint
+    + nombre : varchar(255)
+    + created_at : datetime
+    + updated_at : datetime
+}
+
+class FuenteFinanciamiento {
+    + id : bigint
+    + nombre : varchar(255)
+    + estado : EstadoGeneral
+    + created_at : datetime
+    + updated_at : datetime
+}
+
+class TipoActivo {
+    + id : bigint
+    + nombre : varchar(255)
+    + clasificacion_id : bigint
+    + created_at : datetime
+    + updated_at : datetime
+}
+
+class Proveedor {
+    + id : bigint
+    + nombre : varchar(255)
+    + ruc : varchar(100)
+    + direccion : varchar(255)
+    + telefono : varchar(100)
+    + email : varchar(255)
+    + created_at : datetime
+    + updated_at : datetime
+}
+
+class Responsable {
+    + id : bigint
+    + nombre : varchar(100)
+    + apellido : varchar(100)
+    + cargo : varchar(100)
+    + telefono : varchar(100)
+    + email : varchar(255)
+    + numero_empleado : varchar(50)
+    + estado : EstadoGeneral
+    + foto : varchar(255)
+    + created_at : datetime
+    + updated_at : datetime
+}
+
+class Usuario {
+    + id : bigint
+    + nombre : varchar(100)
+    + apellido : varchar(100)
+    + email : varchar(255)
+    + password : varchar(255)
+    + rol : RolUsuario
+    + estado : EstadoGeneral
+    + foto : varchar(255)
+    + created_at : datetime
+    + updated_at : datetime
+}
+
+class ActivoFijo {
+    + id : bigint
+    + codigo_inventario : varchar(50)
+    + nombre_activo : varchar(255)
+    + marca : varchar(255)
+    + modelo : varchar(255)
+    + color : varchar(50)
+    + serie : varchar(255)
+    + foto : varchar(255)
+    + descripcion : text
+    + cantidad : int
+    + precio_unitario : decimal(12,2)
+    + precio_adquisicion : decimal(12,2)
+    + fecha_adquisicion : date
+    + numero_factura : varchar(100)
+    + numero_cheque : varchar(100)
+    + estado : EstadoActivo
+    + unidad_id : bigint
+    + clasificacion_id : bigint
+    + tipo_activo_id : bigint
+    + fuente_financiamiento_id : bigint
+    + proveedor_id : bigint
+    + responsable_id : bigint
+    + created_at : datetime
+    + updated_at : datetime
+}
+
+class HistorialAsignacion {
+    + id : bigint
+    + activo_id : bigint
+    + responsable_anterior_id : bigint
+    + responsable_nuevo_id : bigint
+    + fecha_asignacion : date
+    + motivo : text
+    + created_at : datetime
+}
+
+' Relaciones
+Unidad "1" -- "0..*" ActivoFijo : contiene >
+Clasificacion "1" -- "0..*" TipoActivo : clasifica >
+Clasificacion "1" -- "0..*" ActivoFijo : clasifica >
+TipoActivo "1" -- "0..*" ActivoFijo : tipo >
+FuenteFinanciamiento "1" -- "0..*" ActivoFijo : financia >
+Proveedor "1" -- "0..*" ActivoFijo : provee >
+Responsable "1" -- "0..*" ActivoFijo : custodia >
+ActivoFijo "1" -- "0..*" HistorialAsignacion : tiene >
+Responsable "1" -- "0..*" HistorialAsignacion : anterior >
+Responsable "1" -- "0..*" HistorialAsignacion : nuevo >
+
+' Notas
+note right of ActivoFijo
+  codigo_inventario: Ej: 123-004-007-001
+  marca: S/M = Sin Marca
+  serie: S/S = Sin Serie
+  cantidad: default: 1
+end note
+
+note right of Responsable
+  nombre: Nombre del custodio del activo
+  numero_empleado: Número de empleado o identificación interna
+end note
+
+note right of Usuario
+  password: Almacenar hash de la contraseña
+end note
+
+note right of TipoActivo
+  clasificacion_id: Clasificación a la que pertenece
+end note
+
+@enduml

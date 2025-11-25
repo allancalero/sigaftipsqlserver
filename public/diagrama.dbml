@@ -1,0 +1,145 @@
+// Modelo de Base de Datos: Sistema de Gestión de Activos Fijos
+// Alcaldía de Tipitapa - Basado en inventario 
+
+// --- Enums para mejorar la integridad de los datos ---
+Enum estado_general {
+  ACTIVO
+  INACTIVO
+}
+
+Enum estado_activo {
+  NUEVO
+  BUENO
+  REGULAR
+  MALO
+}
+
+Enum rol_usuario {
+  ADMIN
+  CONTADOR
+  JEFE_UNIDAD
+  AUDITOR
+}
+
+
+Table unidades {
+  id bigint [pk, increment]
+  nombre varchar(255) [not null, unique, note: "Ej: Unidad ejecutora / área responsable:"]
+  estado estado_general [not null, default: "ACTIVO"]
+  created_at datetime 
+  updated_at datetime
+}
+
+Table clasificaciones {
+  id bigint [pk, increment]
+  nombre varchar(255) [not null, unique, note: "Ej: EQUIPO DE COMPUTACION, EQUIPO DE OFICINA"]
+  created_at datetime
+  updated_at datetime
+}
+
+Table fuentes_financiamiento {
+  id bigint [pk, increment]
+  nombre varchar(255) [not null, note: "Ej: FONDOS PROPIOS"]
+  estado estado_general [not null, default: "ACTIVO"]
+  created_at datetime
+  updated_at datetime
+}
+
+Table tipos_activos {
+  id bigint [pk, increment]
+  nombre varchar(255) [not null, unique, note: "Ej: LAPTOP, ESCRITORIO, IMPRESORA"]
+  clasificacion_id bigint [ref: > clasificaciones.id, not null, note: "Clasificación a la que pertenece"]
+  created_at datetime
+  updated_at datetime
+}
+
+Table proveedores {
+  id bigint [pk, increment]
+  nombre varchar(255) [not null]
+  ruc varchar(100)
+  direccion varchar(255)
+  telefono varchar(100)
+  email varchar(255)
+  created_at datetime
+  updated_at datetime
+}
+
+Table responsables {
+  id bigint [pk, increment]
+  nombre varchar(100) [not null, note: "Nombre del custodio del activo"]
+  apellido varchar(100) [not null]
+  cargo varchar(100)
+  telefono varchar(100)
+  email varchar(255)
+  numero_empleado varchar(50) [note: "Número de empleado o identificación interna"]
+  estado estado_general [not null, default: "ACTIVO"]
+  foto varchar(255) [note: "Ruta o URL de la foto del responsable"]
+  created_at datetime
+  updated_at datetime
+}
+
+Table usuarios {
+  id bigint [pk, increment]
+  nombre varchar(100) [not null]
+  apellido varchar(100) [not null]
+  email varchar(255) [not null, unique]
+  password varchar(255) [not null, note: "Almacenar hash de la contraseña"]
+  rol rol_usuario [not null]
+  estado estado_general [not null, default: "ACTIVO"]
+  foto varchar(255) [note: "Ruta o URL de la foto del usuario"]
+  created_at datetime
+  updated_at datetime
+}
+
+Table activos_fijos {
+  id bigint [pk, increment]
+  
+  // Identificación
+  codigo_inventario varchar(50) [not null, unique, note: "Ej: 123-004-007-001"]
+  
+  // Datos generales
+  nombre_activo varchar(255) [not null]
+  marca varchar(255) [note: "S/M = Sin Marca"]
+  modelo varchar(255)
+  color varchar(50)
+  serie varchar(255) [note: "S/S = Sin Serie"]
+  foto varchar(255) [note: "Ruta o URL de la foto del activo"]
+  descripcion text
+  cantidad int [default: 1]
+  
+  // Valores económicos
+  precio_unitario decimal(12,2)
+  precio_adquisicion decimal(12,2)
+  
+  // Adquisición
+  fecha_adquisicion date
+  numero_factura varchar(100)
+  numero_cheque varchar(100)
+  
+  // Estado físico
+  estado estado_activo [not null, default: "BUENO"]
+  
+  // Relaciones
+  unidad_id bigint [ref: > unidades.id, not null, note: "Unidad o área responsable"]
+  clasificacion_id bigint [ref: > clasificaciones.id, not null]
+  tipo_activo_id bigint [ref: > tipos_activos.id]
+  fuente_financiamiento_id bigint [ref: > fuentes_financiamiento.id, not null]
+  proveedor_id bigint [ref: > proveedores.id]
+  responsable_id bigint [ref: > responsables.id]
+  
+  // Auditoría
+  created_at datetime
+  updated_at datetime
+}
+
+// Tabla opcional: historial de asignaciones (recomendada para auditoría)
+Table historial_asignaciones {
+  id bigint [pk, increment]
+  activo_id bigint [ref: > activos_fijos.id, not null]
+  responsable_anterior_id bigint [ref: > responsables.id]
+  responsable_nuevo_id bigint [ref: > responsables.id, not null]
+  fecha_asignacion date [not null]
+  motivo text
+  created_at datetime
+}
+// Las relaciones ahora están definidas en línea dentro de cada tabla para mayor claridad.
