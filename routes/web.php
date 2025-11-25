@@ -40,7 +40,7 @@ Route::middleware(['auth'])->group(function () {
         ->name('two-factor.show');
 });
 
-//RUTA ASIGNACION//
+//DEFICION DE RUTA ASIGNACION
 
 Route::get('/asignacion', Asignacions::class)
     ->name('asignacions')

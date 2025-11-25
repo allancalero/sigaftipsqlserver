@@ -1,62 +1,142 @@
-<div>
-            <flux:breadcrumbs>
-                    <flux:breadcrumbs.item href="{{ route('dashboard') }}">Inicio</flux:breadcrumbs.item>
-                    <flux:breadcrumbs.item href="{{ route('asignacions') }}">Listado de Asignaciones</flux:breadcrumbs.item>
-            </flux:breadcrumbs>
-            {{-- Close your eyes. Count to one. That is how long forever feels. --}}
+<div py-4>
+     <br>
+<div class="space-y-6">
+    <flux:breadcrumbs>
+        <flux:breadcrumbs.item href="{{ route('dashboard') }}">Inicio</flux:breadcrumbs.item>
+        <flux:breadcrumbs.item href="{{ route('asignacions') }}">Listado de Asignaciones</flux:breadcrumbs.item>
+    </flux:breadcrumbs>
 
-<br>
-<hr>
-<br>
-            <div class="overflow-x-auto">
-                <table class ="min-w-full bg-black border-b divide-y divide-gray-200" style="width: 100%">
-                <thead class="border-b bg-gray-50 dark:bg-gray-700 dark:text-white">
-                <th class="py-3 px-4" style=background-color:#f0f0f0>Id</th>
-                <th class="py-3 px-4" style=background-color:#f0f0f0>Nombre</th>
-                <th class="py-3 px-4" style=background-color:#f0f0f0>Apellido</th>
-                <th class="py-3 px-4" style=background-color:#f0f0f0>Cargo</th>
-                <th class="py-3 px-4" style=background-color:#f0f0f0>Telefono</th>
-                <th class="py-3 px-4" style=background-color:#f0f0f0>Email</th>
-                <th class="py-3 px-4" style=background-color:#f0f0f0># Empleado</th>
-                <th class="py-3 px-4" style=background-color:#f0f0f0>Foto</th>
-                <th class="py-3 px-4" style=background-color:#f0f0f0>Estado</th>
-                <th class="py-3 px-4" style=background-color:#f0f0f0>Acciones</th>
-                </thead>
-     
+    <div class="flex items-center justify-between">
+        <div>
+            <flux:heading size="xl">Asignaciones</flux:heading>
+            <flux:text class="mt-1">Administra los colaboradores y sus equipos asignados.</flux:text>
+        </div>
 
-            <tbody style="border: 1px solid # f0f0f0;">
-                @foreach ($asignacions as $asignacion)
-                <tr style="border: 1px solid # f0f0f0;">
-                    <td class="py-3 px-4 " style=text- lign="center" >{{ $asignacion->id }}</td>
-                    <td>{{ $asignacion->nombre }}</td>
-                    <td>{{ $asignacion->apellido }}</td>
-                    <td>{{ $asignacion->cargo }}</td>
-                    <td>{{ $asignacion->telefono }}</td>
-                    <td>{{ $asignacion->email }}</td>
-                    <td>{{ $asignacion->numero_empleado }}</td>
-                    <td>
-                        @if($asignacion->foto)
-                            <img src="{{ asset('storage/fotos/'.$asignacion->foto) }}" alt="Foto de {{ $asignacion->nombre }}" width="50">
-                        @else
-                            <span>—</span>
-                        @endif
-                    </td>      
-                    <td>{{ $asignacion->estado }}</td>
+        <flux:button variant="primary" wire:click="openCreateForm">Agregar asignación</flux:button>
+    </div>
 
-                    <td>
+    @if (session()->has('message'))
+        <div class="rounded-lg border border-green-200 bg-green-50 p-4 text-sm text-green-800">
+            {{ session('message') }}
+        </div>
+    @endif
 
+    @if ($showCreateForm)
+        <div class="rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-zinc-700 dark:bg-zinc-900">
+            <div class="flex items-start justify-between">
+                <div>
+                    <flux:heading size="lg">Nueva asignación</flux:heading>
+                    <flux:text class="mt-1">Completa los datos del colaborador y guarda la asignación.</flux:text>
+                </div>
 
-                    </td>
+                <flux:button variant="ghost" size="sm" wire:click="hideCreateForm">Cerrar</flux:button>
+            </div>
+
+            <form wire:submit.prevent="save" class="mt-6 space-y-4">
+                <div class="grid gap-4 sm:grid-cols-2">
+                    <flux:input wire:model.defer="nombre" label="Nombre" type="text" required />
+                    <flux:input wire:model.defer="apellido" label="Apellido" type="text" required />
+                    <flux:input wire:model.defer="cargo" label="Cargo" type="text" required />
+                    <flux:input wire:model.defer="telefono" label="Teléfono" type="text" required />
+                    <flux:input wire:model.defer="email" label="Email" type="email" required />
+                    <flux:input wire:model.defer="numero_empleado" label="Número de empleado" type="text" required />
+                    <flux:input wire:model.defer="estado" label="Estado" type="text" placeholder="ACTIVO / INACTIVO" required />
+                    <flux:input wire:model.defer="foto" label="Foto" type="text" placeholder="ruta/archivo.jpg" />
+                </div>
+
+                <div class="flex justify-end gap-3">
+                    <flux:button variant="ghost" type="button" wire:click="hideCreateForm" data-test="cancel-create-asignacion-button">
+                        Cancelar
+                    </flux:button>
+                    <flux:button variant="primary" type="submit" data-test="create-asignacion-button">
+                        Guardar
+                    </flux:button>
+                </div>
+            </form>
+        </div>
+    @endif
+
+    <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200 overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm dark:divide-zinc-700 dark:border-zinc-700 dark:bg-zinc-900">
+            <thead class="bg-gray-50 text-left text-sm font-semibold uppercase tracking-wide text-gray-600 dark:bg-zinc-800 dark:text-zinc-200">
+                <tr>
+                    <th class="px-4 py-3">Id</th>
+                    <th class="px-4 py-3">Nombre</th>
+                    <th class="px-4 py-3">Apellido</th>
+                    <th class="px-4 py-3">Cargo</th>
+                    <th class="px-4 py-3">Teléfono</th>
+                    <th class="px-4 py-3">Email</th>
+                    <th class="px-4 py-3"># Empleado</th>
+                    <th class="px-4 py-3">Foto</th>
+                    <th class="px-4 py-3">Estado</th>
+                    <th class="px-4 py-3">Acciones</th>
                 </tr>
-                    
+            </thead>
+            <tbody class="divide-y divide-gray-200 text-sm text-gray-700 dark:divide-zinc-800 dark:text-zinc-200">
+                @foreach ($asignacions as $asignacion)
+                    <tr>
+                        <td class="px-4 py-3 text-center font-medium">{{ $asignacion->id }}</td>
+                        <td class="px-4 py-3">{{ $asignacion->nombre }}</td>
+                        <td class="px-4 py-3">{{ $asignacion->apellido }}</td>
+                        <td class="px-4 py-3">{{ $asignacion->cargo }}</td>
+                        <td class="px-4 py-3">{{ $asignacion->telefono }}</td>
+                        <td class="px-4 py-3">{{ $asignacion->email }}</td>
+                        <td class="px-4 py-3">{{ $asignacion->numero_empleado }}</td>
+                        <td class="px-4 py-3">
+                            @if ($asignacion->foto)
+                                <img src="{{ asset('storage/fotos/'.$asignacion->foto) }}" alt="Foto de {{ $asignacion->nombre }}" class="h-12 w-12 rounded object-cover">
+                            @else
+                                <span>—</span>
+                            @endif
+                        </td>
+                        <td class="px-4 py-3">
+                            <span class="inline-flex items-center rounded-full bg-blue-50 px-2.5 py-0.5 text-xs font-semibold uppercase tracking-wide text-blue-700 dark:bg-blue-500/10 dark:text-blue-300">
+                                {{ $asignacion->estado }}
+                            </span>
+                        </td>
+                        <td class="px-4 py-3">
+                            <flux:modal.trigger :name="'asignacion-'.$asignacion->id">
+                                <flux:button size="sm" variant="primary">Ver detalle</flux:button>
+                            </flux:modal.trigger>
+
+                            <flux:modal :name="'asignacion-'.$asignacion->id" class="md:w-96">
+                                <div class="space-y-4">
+                                    <div>
+                                        <flux:heading size="lg">Asignación #{{ $asignacion->id }}</flux:heading>
+                                        <flux:text class="mt-1">Información detallada del activo asignado.</flux:text>
+                                    </div>
+
+                                    <div class="space-y-2 text-sm">
+                                        <flux:text><strong>Nombre:</strong> {{ $asignacion->nombre }} {{ $asignacion->apellido }}</flux:text>
+                                        <flux:text><strong>Cargo:</strong> {{ $asignacion->cargo }}</flux:text>
+                                        <flux:text><strong>Teléfono:</strong> {{ $asignacion->telefono }}</flux:text>
+                                        <flux:text><strong>Email:</strong> {{ $asignacion->email }}</flux:text>
+                                        <flux:text><strong>Número de empleado:</strong> {{ $asignacion->numero_empleado }}</flux:text>
+                                        <flux:text><strong>Estado:</strong> {{ $asignacion->estado }}</flux:text>
+                                    </div>
+
+                                    @if ($asignacion->foto)
+                                        <div class="flex justify-center">
+                                            <img src="{{ asset('storage/fotos/'.$asignacion->foto) }}" alt="Foto de {{ $asignacion->nombre }}" class="h-28 w-28 rounded object-cover">
+                                        </div>
+                                    @endif
+
+                                    <div class="flex justify-end gap-2">
+                                        <flux:button variant="ghost" @click="$dispatch('modal-close', { name: 'asignacion-{{ $asignacion->id }}' })">
+                                            Cerrar
+                                        </flux:button>
+                                    </div>
+                                </div>
+                            </flux:modal>
+                        </td>
+                    </tr>
                 @endforeach
-
-
             </tbody>
-       </table>
+        </table>
+    </div>
 
-       <div class="mt-4">
-           {{ $asignacions->links() }}
-       </div>
+    <div>
+        {{ $asignacions->links() }}
+    </div>
+
 </div>
- </div>

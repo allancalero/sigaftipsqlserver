@@ -9,4 +9,19 @@ class Asignacion extends Model
 {
     /** @use HasFactory<\Database\Factories\AsignacionFactory> */
     use HasFactory;
+
+    protected $fillable = [
+        'nombre',
+        'apellido',
+        'cargo',
+        'telefono',
+        'email',
+        'numero_empleado',
+        'estado',
+        'foto',
+    ];
+
+
+
+
 }
