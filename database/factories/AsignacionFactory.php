@@ -5,9 +5,9 @@ namespace Database\Factories;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Responsable>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Asignacion>
  */
-class ResponsableFactory extends Factory
+class AsignacionFactory extends Factory
 {
     /**
      * Define the model's default state.
@@ -22,9 +22,9 @@ class ResponsableFactory extends Factory
             'cargo' => $this->faker->jobTitle(),
             'telefono' => $this->faker->phoneNumber(),
             'email' => $this->faker->unique()->safeEmail(),
-            'numeroempleado' => $this->faker->unique()->numerify('###########'),
-            'estado' => 'ACTIVO',
-            'foto' => $this->faker->image(),        
+            'numero_empleado' => $this->faker->unique()->numerify('EMP####'),
+            'estado' => $this->faker->randomElement(['ACTIVO', 'INACTIVO']),
+            'foto' => null,
         ];
     }
 }

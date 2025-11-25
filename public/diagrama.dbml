@@ -24,7 +24,7 @@ Enum rol_usuario {
 
 Table unidades {
   id bigint [pk, increment]
-  nombre varchar(255) [not null, unique, note: "Ej: Unidad ejecutora / área responsable:"]
+  nombre varchar(255) [not null, unique, note: "Ej: Unidad ejecutora / área asignacion:"]
   estado estado_general [not null, default: "ACTIVO"]
   created_at datetime 
   updated_at datetime
@@ -64,7 +64,7 @@ Table proveedores {
   updated_at datetime
 }
 
-Table responsables {
+Table asignacion {
   id bigint [pk, increment]
   nombre varchar(100) [not null, note: "Nombre del custodio del activo"]
   apellido varchar(100) [not null]
@@ -73,7 +73,7 @@ Table responsables {
   email varchar(255)
   numero_empleado varchar(50) [note: "Número de empleado o identificación interna"]
   estado estado_general [not null, default: "ACTIVO"]
-  foto varchar(255) [note: "Ruta o URL de la foto del responsable"]
+  foto varchar(255) [note: "Ruta o URL de la foto del asignacion"]
   created_at datetime
   updated_at datetime
 }
@@ -120,12 +120,12 @@ Table activos_fijos {
   estado estado_activo [not null, default: "BUENO"]
   
   // Relaciones
-  unidad_id bigint [ref: > unidades.id, not null, note: "Unidad o área responsable"]
+  unidad_id bigint [ref: > unidades.id, not null, note: "Unidad o área asignacion"]
   clasificacion_id bigint [ref: > clasificaciones.id, not null]
   tipo_activo_id bigint [ref: > tipos_activos.id]
   fuente_financiamiento_id bigint [ref: > fuentes_financiamiento.id, not null]
   proveedor_id bigint [ref: > proveedores.id]
-  responsable_id bigint [ref: > responsables.id]
+  asignacion_id bigint [ref: > asignacion.id]
   
   // Auditoría
   created_at datetime
@@ -136,8 +136,8 @@ Table activos_fijos {
 Table historial_asignaciones {
   id bigint [pk, increment]
   activo_id bigint [ref: > activos_fijos.id, not null]
-  responsable_anterior_id bigint [ref: > responsables.id]
-  responsable_nuevo_id bigint [ref: > responsables.id, not null]
+  asignacion_anterior_id bigint [ref: > asignacion.id]
+  asignacion_nuevo_id bigint [ref: > asignacion.id, not null]
   fecha_asignacion date [not null]
   motivo text
   created_at datetime

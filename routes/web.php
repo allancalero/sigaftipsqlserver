@@ -40,8 +40,4 @@ Route::middleware(['auth'])->group(function () {
 });
 
 
-Route::get('/responsables', responsables::class)
-    ->name('Responsables')
-    ->middleware(['auth']);
-
 
