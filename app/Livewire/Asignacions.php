@@ -4,11 +4,12 @@ namespace App\Livewire;
 
 use App\Models\Asignacion;
 use Livewire\Component;
+use Livewire\WithFileUploads;
 use Livewire\WithPagination;
 
 class Asignacions extends Component
 {
-    use WithPagination;
+    use WithPagination, WithFileUploads;
 
     protected $paginationTheme = 'tailwind';
 
@@ -16,7 +17,11 @@ class Asignacions extends Component
     public $nombre, $apellido, $cargo, $telefono, $email, $numero_empleado, $estado, $foto;
 
     public $showCreateForm = false;
-    
+
+    public $showModal = false;
+    public $asignacionSeleccionada = null;
+
+
     //Reglasde validacion
     protected $rules = [
         'nombre' => 'required|string|max:55',
@@ -26,7 +31,7 @@ class Asignacions extends Component
         'email' => 'required|email|unique:asignacions,email',
         'numero_empleado' => 'required|string|unique:asignacions,numero_empleado',
         'estado' => 'required|in:ACTIVO,INACTIVO',
-        'foto' => 'nullable|string|max:255',
+        'foto' => 'nullable|image|max:2048',
     ];
     
     //resetear campos del formulario
@@ -39,7 +44,7 @@ class Asignacions extends Component
         $this->email = '';
         $this->numero_empleado = '';
         $this->estado = '';
-        $this->foto = '';
+        $this->foto = null;
     }   
 
     public function openCreateForm()
@@ -58,6 +63,11 @@ class Asignacions extends Component
     public function save()
     {
         $this->validate();
+
+        $fotoPath = null;
+        if ($this->foto) {
+            $fotoPath = $this->foto->store('fotos', 'public');
+        }
         
         Asignacion::create([
             'nombre' => $this->nombre,
@@ -67,14 +77,26 @@ class Asignacions extends Component
             'email' => $this->email,
             'numero_empleado' => $this->numero_empleado,
             'estado' => $this->estado,
-            'foto' => $this->foto,
+            'foto' => $fotoPath,
         ]);
-    
-        
-        session()->flash('message', 'Asignacion creada exitosamente.');
-        
+
+        session()->flash('message', 'Empleado creado exitosamente.');
+
         $this->resetInputFields();
-            $this->hideCreateForm();
+        $this->hideCreateForm();
+    }
+
+
+    public function show($id)
+    {
+        $this->asignacionSeleccionada = Asignacion::find($id);
+        $this->showModal = (bool) $this->asignacionSeleccionada;
+    }
+
+    public function closeModal()
+    {
+        $this->showModal = false;
+        $this->asignacionSeleccionada = null;
     }
 
      public function render()

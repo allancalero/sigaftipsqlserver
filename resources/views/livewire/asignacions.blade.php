@@ -1,18 +1,16 @@
-<div py-4>
-     <br>
-<div class="space-y-6">
+<div class="space-y-6 py-4">
     <flux:breadcrumbs>
         <flux:breadcrumbs.item href="{{ route('dashboard') }}">Inicio</flux:breadcrumbs.item>
-        <flux:breadcrumbs.item href="{{ route('asignacions') }}">Listado de Asignaciones</flux:breadcrumbs.item>
+        <flux:breadcrumbs.item href="{{ route('asignacions') }}">Listado del personal asignado</flux:breadcrumbs.item>
     </flux:breadcrumbs>
 
     <div class="flex items-center justify-between">
         <div>
-            <flux:heading size="xl">Asignaciones</flux:heading>
-            <flux:text class="mt-1">Administra los colaboradores y sus equipos asignados.</flux:text>
+            <flux:heading size="xl">Personal asignado</flux:heading>
+            <flux:text class="mt-1">Gestiona el personal y registra nuevas asignaciones.</flux:text>
         </div>
 
-        <flux:button variant="primary" wire:click="openCreateForm">Agregar asignación</flux:button>
+        <flux:button variant="primary" wire:click="openCreateForm">Agregar personal</flux:button>
     </div>
 
     @if (session()->has('message'))
@@ -41,7 +39,30 @@
                     <flux:input wire:model.defer="email" label="Email" type="email" required />
                     <flux:input wire:model.defer="numero_empleado" label="Número de empleado" type="text" required />
                     <flux:input wire:model.defer="estado" label="Estado" type="text" placeholder="ACTIVO / INACTIVO" required />
-                    <flux:input wire:model.defer="foto" label="Foto" type="text" placeholder="ruta/archivo.jpg" />
+
+                    <div class="sm:col-span-2 space-y-2">
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-200" for="foto">
+                            Foto del colaborador
+                        </label>
+                        <input
+                            id="foto"
+                            type="file"
+                            wire:model="foto"
+                            accept="image/*"
+                            class="block w-full rounded border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100"
+                        />
+
+                        @error('foto')
+                            <p class="text-sm text-red-600">{{ $message }}</p>
+                        @enderror
+
+                        @if ($foto)
+                            <div class="mt-2 flex items-center gap-3">
+                                <span class="text-xs text-gray-500 dark:text-gray-400">Previsualización:</span>
+                                <img src="{{ $foto->temporaryUrl() }}" alt="Previsualización" class="h-16 w-16 rounded object-cover" />
+                            </div>
+                        @endif
+                    </div>
                 </div>
 
                 <div class="flex justify-end gap-3">
@@ -84,7 +105,7 @@
                         <td class="px-4 py-3">{{ $asignacion->numero_empleado }}</td>
                         <td class="px-4 py-3">
                             @if ($asignacion->foto)
-                                <img src="{{ asset('storage/fotos/'.$asignacion->foto) }}" alt="Foto de {{ $asignacion->nombre }}" class="h-12 w-12 rounded object-cover">
+                                <img src="{{ asset('storage/'.$asignacion->foto) }}" alt="Foto de {{ $asignacion->nombre }}" class="h-12 w-12 rounded object-cover">
                             @else
                                 <span>—</span>
                             @endif
@@ -96,14 +117,14 @@
                         </td>
                         <td class="px-4 py-3">
                             <flux:modal.trigger :name="'asignacion-'.$asignacion->id">
-                                <flux:button size="sm" variant="primary">Ver detalle</flux:button>
+                                <flux:button size="sm" variant="primary" wire:click="show({{ $asignacion->id }})">Ver detalle</flux:button>
                             </flux:modal.trigger>
 
                             <flux:modal :name="'asignacion-'.$asignacion->id" class="md:w-96">
                                 <div class="space-y-4">
                                     <div>
                                         <flux:heading size="lg">Asignación #{{ $asignacion->id }}</flux:heading>
-                                        <flux:text class="mt-1">Información detallada del activo asignado.</flux:text>
+                                        <flux:text class="mt-1">Información detallada del personal asignado.</flux:text>
                                     </div>
 
                                     <div class="space-y-2 text-sm">
@@ -117,7 +138,7 @@
 
                                     @if ($asignacion->foto)
                                         <div class="flex justify-center">
-                                            <img src="{{ asset('storage/fotos/'.$asignacion->foto) }}" alt="Foto de {{ $asignacion->nombre }}" class="h-28 w-28 rounded object-cover">
+                                            <img src="{{ asset('storage/'.$asignacion->foto) }}" alt="Foto de {{ $asignacion->nombre }}" class="h-28 w-28 rounded object-cover">
                                         </div>
                                     @endif
 
@@ -138,5 +159,4 @@
     <div>
         {{ $asignacions->links() }}
     </div>
-
 </div>

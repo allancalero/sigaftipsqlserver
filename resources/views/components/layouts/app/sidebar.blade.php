@@ -37,7 +37,7 @@
                      <flux:navlist.item icon="credit-card"
                                        href="{{ route('asignacions') }}"
                                        :current="false"
-                                       wire:navigate>{{ __('Asignacion') }}
+                                       wire:navigate>{{ __('Personal') }}
                     </flux:navlist.item>
 
 
