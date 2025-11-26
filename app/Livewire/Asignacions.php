@@ -14,12 +14,20 @@ class Asignacions extends Component
     protected $paginationTheme = 'tailwind';
 
     // campos del formulario
-    public $nombre, $apellido, $cargo, $telefono, $email, $numero_empleado, $estado, $foto;
+    public $nombre;
+    public $apellido;
+    public $cargo;
+    public $telefono;
+    public $email;
+    public $numero_empleado;
+    public $estado = 'ACTIVO';
+    public $foto;
 
     public $showCreateForm = false;
-
+    // control de modal
     public $showModal = false;
     public $asignacionSeleccionada = null;
+    public array $estadoOptions = ['ACTIVO', 'INACTIVO'];
 
 
     //Reglasde validacion
@@ -34,18 +42,12 @@ class Asignacions extends Component
         'foto' => 'nullable|image|max:2048',
     ];
     
-    //resetear campos del formulario
     public function resetInputFields()
     {
-        $this->nombre = '';
-        $this->apellido = '';
-        $this->cargo = '';
-        $this->telefono = '';
-        $this->email = '';
-        $this->numero_empleado = '';
-        $this->estado = '';
-        $this->foto = null;
-    }   
+        $this->reset(['nombre', 'apellido', 'cargo', 'telefono', 'email', 'numero_empleado', 'estado', 'foto']);
+        $this->resetErrorBag();
+        $this->estado = $this->estadoOptions[0];
+    }
 
     public function openCreateForm()
     {
@@ -104,6 +106,9 @@ class Asignacions extends Component
        // Paginar por 20 registros
         $asignacions = Asignacion::paginate(10  );
 
-        return view('livewire.asignacions', compact('asignacions'));
+        return view('livewire.asignacions', [
+            'asignacions' => $asignacions,
+            'estadoOptions' => $this->estadoOptions,
+        ]);
     }
 }

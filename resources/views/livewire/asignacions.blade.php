@@ -20,57 +20,79 @@
     @endif
 
     @if ($showCreateForm)
-        <div class="rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-zinc-700 dark:bg-zinc-900">
-            <div class="flex items-start justify-between">
+        <div class="rounded-2xl border border-gray-200 bg-white p-8 shadow-lg dark:border-zinc-700 dark:bg-zinc-900">
+            <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                 <div>
-                    <flux:heading size="lg">Nueva asignación</flux:heading>
-                    <flux:text class="mt-1">Completa los datos del colaborador y guarda la asignación.</flux:text>
+                    <flux:heading size="lg" class="text-gray-900 dark:text-white">Registrar nueva asignación</flux:heading>
+                    <flux:text class="mt-2 text-sm leading-6 text-gray-600 dark:text-gray-300">
+                        Completa la información del colaborador para llevar un control claro de los activos asignados.
+                    </flux:text>
                 </div>
 
                 <flux:button variant="ghost" size="sm" wire:click="hideCreateForm">Cerrar</flux:button>
             </div>
 
-            <form wire:submit.prevent="save" class="mt-6 space-y-4">
-                <div class="grid gap-4 sm:grid-cols-2">
-                    <flux:input wire:model.defer="nombre" label="Nombre" type="text" required />
-                    <flux:input wire:model.defer="apellido" label="Apellido" type="text" required />
-                    <flux:input wire:model.defer="cargo" label="Cargo" type="text" required />
-                    <flux:input wire:model.defer="telefono" label="Teléfono" type="text" required />
-                    <flux:input wire:model.defer="email" label="Email" type="email" required />
-                    <flux:input wire:model.defer="numero_empleado" label="Número de empleado" type="text" required />
-                    <flux:input wire:model.defer="estado" label="Estado" type="text" placeholder="ACTIVO / INACTIVO" required />
+            <div class="mt-6 rounded-xl border border-dashed border-blue-200 bg-blue-50/80 px-4 py-3 text-sm text-blue-800 dark:border-blue-500/40 dark:bg-blue-500/10 dark:text-blue-200">
+                Verifica que el correo y el número de empleado sean únicos antes de guardar. Estos datos ayudan a identificar rápidamente al colaborador.
+            </div>
 
-                    <div class="sm:col-span-2 space-y-2">
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-200" for="foto">
-                            Foto del colaborador
-                        </label>
-                        <input
-                            id="foto"
-                            type="file"
-                            wire:model="foto"
-                            accept="image/*"
-                            class="block w-full rounded border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100"
-                        />
+            <form wire:submit.prevent="save" class="mt-8 space-y-8">
+                <div class="grid gap-6 lg:grid-cols-2">
+                    <div class="space-y-4">
+                        <flux:input wire:model.defer="nombre" label="Nombre" type="text" placeholder="Ej. Ana Sofía" required />
+                        <flux:input wire:model.defer="apellido" label="Apellido" type="text" placeholder="Ej. García" required />
+                        <flux:input wire:model.defer="cargo" label="Cargo" type="text" placeholder="Ej. Analista de Soporte" required />
+                        <flux:input wire:model.defer="telefono" label="Teléfono" type="text" placeholder="Ej. 7890-1234" required />
+                    </div>
 
-                        @error('foto')
-                            <p class="text-sm text-red-600">{{ $message }}</p>
-                        @enderror
+                    <div class="space-y-4">
+                        <flux:input wire:model.defer="email" label="Email corporativo" type="email" placeholder="nombre.apellido@empresa.com" required />
+                        <flux:input wire:model.defer="numero_empleado" label="Número de empleado" type="text" placeholder="Ej. EMP-1023" required />
+                        <flux:select wire:model.defer="estado" label="Estado" required>
+                            @foreach ($estadoOptions as $option)
+                                <option value="{{ $option }}">{{ $option }}</option>
+                            @endforeach
+                        </flux:select>
 
-                        @if ($foto)
-                            <div class="mt-2 flex items-center gap-3">
-                                <span class="text-xs text-gray-500 dark:text-gray-400">Previsualización:</span>
-                                <img src="{{ $foto->temporaryUrl() }}" alt="Previsualización" class="h-16 w-16 rounded object-cover" />
+                        <div class="space-y-2">
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-200" for="foto">
+                                Fotografía del colaborador
+                            </label>
+                            <div class="flex flex-col gap-3 rounded-lg border border-gray-200 bg-white p-3 dark:border-zinc-700 dark:bg-zinc-950">
+                                <input
+                                    id="foto"
+                                    type="file"
+                                    wire:model="foto"
+                                    accept="image/*"
+                                    class="block w-full rounded border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100"
+                                />
+
+                                @if ($foto)
+                                    <div class="flex items-center gap-3">
+                                        <img src="{{ $foto->temporaryUrl() }}" alt="Previsualización" class="h-16 w-16 rounded-lg object-cover" />
+                                        <span class="text-xs text-gray-500 dark:text-gray-400">Esta imagen se guardará junto al registro.</span>
+                                    </div>
+                                @endif
+
+                                @error('foto')
+                                    <p class="text-sm text-red-600">{{ $message }}</p>
+                                @enderror
                             </div>
-                        @endif
+                        </div>
                     </div>
                 </div>
 
-                <div class="flex justify-end gap-3">
+                <div class="flex flex-col gap-3 rounded-xl bg-gray-50 p-4 text-sm text-gray-600 dark:bg-zinc-800/60 dark:text-zinc-200">
+                    <span class="font-medium text-gray-800 dark:text-white">Consejo:</span>
+                    <span>Utiliza el campo "Estado" para marcar si el colaborador está activo o inactivo dentro de la organización. Puedes actualizarlo en cualquier momento.</span>
+                </div>
+
+                <div class="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
                     <flux:button variant="ghost" type="button" wire:click="hideCreateForm" data-test="cancel-create-asignacion-button">
                         Cancelar
                     </flux:button>
                     <flux:button variant="primary" type="submit" data-test="create-asignacion-button">
-                        Guardar
+                        Guardar asignación
                     </flux:button>
                 </div>
             </form>
